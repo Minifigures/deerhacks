@@ -223,24 +223,23 @@ Accessibility scores + map-ready spatial data.
 ### Node 5: The COST ANALYST (Financial Node)
 
 **Role:** "No-surprises" auditor.
-**Tools:** Firecrawl, Jina Reader
+**Model:** Gemini 2.5 Flash
+**Tools:** Firecrawl
 
 **Responsibilities:**
 
-- **Web Scraping Strategy (Firecrawl + Jina Reader):**
-  1. **Firecrawl `/map`** — Crawl each venue's website to automatically discover the "Pricing" or "Menu" page.
-  2. **Jina Reader** — Fetch "General Info" / "About" pages as clean markdown via `https://r.jina.ai/<url>` (zero config, no API key, acts as a fallback if Firecrawl is rate-limited).
-  3. **Firecrawl `/scrape`** — Extract structured pricing data from the discovered pricing page using a **Pydantic schema** for typed output.
+- **Web Scraping Strategy (Firecrawl + Gemini 2.5 Flash):**
+  1. **Semantic Search via Firecrawl `/map`** — Scans the venue's domain utilizing deep semantic search (e.g., matching keywords like "pricing", "rates", "fees", "menu") to discover the most relevant sub-pages.
+  2. **Multi-Page Aggregation** — Scrapes the top 3 pricing-related pages along with the venue's **homepage** (since many smaller venues embed prices directly on their main page).
+  3. **Holistic LLM Extraction** — Combines up to 50,000 characters of scraped markdown and feeds it into **Gemini 2.5 Flash** to extract complex pricing structures (base entry, gear rentals, taxes) directly into a structured JSON schema.
 
 - Computes **Total Cost of Attendance (TCA)**:
   - Hidden fees
   - Equipment rentals
   - Minimum spends
 
-- **Snowflake Cortex Comparison:**
-  Compares live prices against historical trends to detect:
-  - Seasonal price spikes
-  - Misleading "discounts"
+- **Robust Fallback Systems:**
+  Gracefully handles unlisted pricing or interactive booking widgets by estimating rates based on the venue category and passing "High uncertainty" notes to the Critic node.
 
 **Output:**
 Transparent, normalized cost profiles per venue.
@@ -505,7 +504,7 @@ Host the multi-agent system on Vultr's cloud compute for production-grade perfor
 | Scout | Google Places API, Yelp Fusion | Venue discovery and raw metadata collection |
 | Vibe Matcher | Gemini 1.5 Pro (Multimodal) | Aesthetic, photo-based, and sentiment-driven vibe analysis |
 | Access Analyst | Mapbox Isochrone API, Google Distance Matrix | Travel-time feasibility and spatial scoring |
-| Cost Analyst | Firecrawl, Jina Reader + Snowflake Cortex | True cost extraction and pricing anomaly detection |
+| Cost Analyst | Firecrawl + Snowflake Cortex | True cost extraction and pricing anomaly detection |
 | Crowd Analyst *(optional)* | Google Places Reviews, Yelp Reviews + Snowflake | Review aggregation, competitor density, social proof scoring |
 | Critic | Gemini (Adversarial Reasoning) + OpenWeather, PredictHQ | Failure detection, risk forecasting, veto logic |
 | Memory & RAG | Snowflake + Snowflake Cortex Search | Historical risk storage and predictive intelligence |

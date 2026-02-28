@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     SNOWFLAKE_DATABASE: str = "PATHFINDER"
     SNOWFLAKE_SCHEMA: str = "PUBLIC"
     SNOWFLAKE_WAREHOUSE: str = "COMPUTE_WH"
+    SNOWFLAKE_ROLE: str = "ACCOUNTADMIN"
 
     # ── Redis ──
     REDIS_URL: str = "redis://localhost:6379/0"
